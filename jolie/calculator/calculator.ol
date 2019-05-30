@@ -12,7 +12,7 @@ inputPort Calculator {
 }
 
 init {
-	println@Console("Calculator service started.\nEndpoint: " + CalculatorLocation)()
+	println@Console("Calculator service started.\nEndpoint: " + CalculatorLocation + "\n")()
 }
 
 define logOperation {
