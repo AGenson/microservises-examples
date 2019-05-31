@@ -14,14 +14,41 @@ inputPort Stats {
 init {
 	timeout -> global.stats.timeout;
 	success -> global.stats.success;
-	failure -> global.stats.failure
+	failure -> global.stats.failure;
+}
+
+define addNewTimestamp {
+	getCurrentTimeMillis@Time()( timestamp );
+	array[#array] = timestamp;
+}
+
+define rollingWindowCheck {
+	getCurrentTimeMillis@Time()( timestamp );
+
+	foreach ( item : array ) {
+		if ( ( timestamp - item ) < ( RollingWindow * 1000 ) )
+			newArray[#newArray] = item;
+	}
+
+	undef( array )
+	array << newArray
+}
+
+define rollingWindowCheckForAll {
+	array -> timeout;
+	rollingWindowCheck;
+	array -> success;
+	rollingWindowCheck;
+	array -> failure;
+	rollingWindowCheck;
 }
 
 define checkRate { // Need to verify if it actually is the same code for canPass and shouldTrip (not sure)
+	rollingWindowCheckForAll;
 	rate = 0;
 
-	if ( timeout + success + failure != 0 )
-		rate = ( timeout + failure ) / ( timeout + success + failure ) * 100;
+	if ( #timeout + #success + #failure != 0 )
+		rate = ( #timeout + #failure ) / ( #timeout + #success + #failure ) * 100;
 
 	response = ( rate < TripThreshold );
 }
@@ -43,28 +70,33 @@ main {
 
 	[ timeout() ] {
 		synchronized( stats ){
-			timeout++;
+			array -> timeout;
+			addNewTimestamp;
 			println@Console("Timeout called")
 		}
 	}
 
 	[ success() ] {
 		synchronized( stats ){
-			success++;
+			array -> timeout;
+			addNewTimestamp;
 			println@Console("Success called")
 		}
 	}
 
 	[ failure() ] {
 		synchronized( stats ){
-			failure++;
+			array -> timeout;
+			addNewTimestamp;
 			println@Console("Failure called")
 		}
 	}
 
 	[ reset() {
 		synchronized( stats ){
-			timeout = success = failure = 0;
+			undef( timeout );
+			undef( success );
+			undef( failure );
 			println@Console("Reset called")()
 		}
 	}]
