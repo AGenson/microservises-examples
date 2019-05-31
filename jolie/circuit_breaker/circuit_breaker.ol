@@ -64,7 +64,7 @@ define forwardMsg {
 		reset@Stats();
 		state = State_Closed;
 		setState;
-	}
+	} // Until here
 	else success@Stats();
 }
 
