@@ -23,6 +23,11 @@ inputPort CircuitBreaker {
 	Aggregates: Calculator with CircuitBreakerInterface_Extender
 }
 
+inputPort CircuitBreakerInternal {
+	Location: "local"
+	Interfaces: CircuitBreakerInterface
+}
+
 define throwFault {
 	throw( CircuitBreakerFault, "Server not available." );
 	println@Console("Error: CIRCUIT_BREAKER_FAULT")()
@@ -32,8 +37,7 @@ define getState { synchronized( state ){ state = global.state } }
 define setState { synchronized( state ){ global.state = state } }
 
 define trip {
-	state = State_Open;
-	setState;
+	state = State_Open; setState;
 	scheduleTimeout@Time( int(ResetTimeout*1000) { .operation = "resetTimeout" } )()
 }
 
@@ -46,46 +50,53 @@ define checkErrorRate {
 	} else if ( global.state == State_HalfOpen ) trip
 }
 
-define forwardMsg {
-	scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
-
+define handleFault {
 	install( dafault => 
 		cancelTimeout@Time( timeoutID )();
 		failure@Stats();
 		checkErrorRate
-	);
+	)
+}
 
-	forward( request )( response );
+define procedureAfterForward {
 	cancelTimeout@Time( timeoutID )();
-
 	getState;
 
 	if (state == State_HalfOpen) { // Not in original code, but got to implement in a way to go back to Closed state
 		reset@Stats();
-		state = State_Closed;
-		setState;
-	} // Until here
-	else success@Stats();
+		state = State_Closed; setState
+	}; // Until here
+	
+	success@Stats()
 }
 
 courier CircuitBreaker {
 	[ interface CalculatorInterface( request )( response ) ] {
 		getState;
 
-		if (state == State_Closed) forwardMsg
+		if (state == State_Closed) {
+			scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
+			handleFault;
+			forward( request )( response );
+			procedureAfterForward
+		}
 		else if (state == State_Open) throwFault
 		else {
 			checkCanPass@Stats()( canPass );
 
-			if ( canPass ) forwardMsg
+			if ( canPass ) {
+				scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
+				handleFault;
+				forward( request )( response );
+				procedureAfterForward
+			}
 			else throwFault
 		}
 	}
 }
 
 init {
-	state = State_Closed;
-	setState;
+	state = State_Closed; setState;
 
 	println@Console("Circuit Breaker service started.\nEndpoint: " + CircuitBreakerLocation + "\n")()
 }

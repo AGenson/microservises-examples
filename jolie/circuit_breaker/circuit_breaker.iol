@@ -17,5 +17,5 @@ interface CircuitBreakerInterface {
 
 interface extender CircuitBreakerInterface_Extender {
 	RequestResponse:
-		*( request )( response ) throws CircuitBreakerFault( string )
+		*( void )( void ) throws CircuitBreakerFault( string )
 }
