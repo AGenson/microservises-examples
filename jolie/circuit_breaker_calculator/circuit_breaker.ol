@@ -1,15 +1,15 @@
 include "console.iol"
 include "time.iol"
 
-include "stats.iol"
 include "../locations.iol"
 include "circuit_breaker.iol"
+include "../circuit_breaker/stats.iol"
 include "../calculator/calculator.iol"
 
 execution{ concurrent }
 
 outputPort Stats { Interfaces: StatsInterface }
-embedded { Jolie: "stats.ol" in Stats }
+embedded { Jolie: "../circuit_breaker/stats.ol" in Stats }
 
 outputPort Calculator {
 	Location: CalculatorLocation
