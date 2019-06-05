@@ -1,6 +1,6 @@
 constants {
-	TripThreshold = 5,
-	RollingWindow = 60 // Need to implement it in some way, it's not used
+	TripThreshold = 5, // percentage
+	RollingWindow = 60 // seconds
 }
 
 interface StatsInterface {

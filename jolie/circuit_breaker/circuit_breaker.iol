@@ -5,8 +5,8 @@ constants {
 }
 
 constants {
-	CallTimeout = 20,
-	ResetTimeout = 30
+	CallTimeout = 20, // seconds
+	ResetTimeout = 30 // seconds
 }
 
 interface CircuitBreakerInterface {
