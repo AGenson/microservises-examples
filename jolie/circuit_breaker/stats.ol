@@ -1,6 +1,6 @@
 include "console.iol"
+include "time.iol"
 
-include "constants.iol"
 include "stats.iol"
 
 execution{ concurrent }
