@@ -19,19 +19,10 @@ init {
 	println@Console("Authentificator service started.\nEndpoint: " + AuthentificatorLocation + "\n")()
 }
 
-define throwCredentialsError {
-	throw( InvalidCredentials, "Invalid credentials, please retry again." );
-	println@Console("Error: INVALID_CREDENTIALS")()
-}
-
-define throwKeyError {
-	throw( InvalidKey, "Invalid key, please retry or get a new one." );
-	println@Console("Error: INVALID_KEY")()
-}
-
 main {
 	[ get_key( request )( response ) {
 		statusCode = 200;
+		install( InvalidCredentials => println@Console("Error: INVALID_CREDENTIALS")() );
 		println@Console("Received credentials: username=" + request.username + " & password=" + request.password)();
 
 		if ( global.credentials.( request.username ) == request.password ) {
@@ -45,11 +36,14 @@ main {
 		}
 		else {
 			statusCode = 401;
+			throw( InvalidCredentials, "Invalid credentials, please retry again." )
 		}
 	}]
 
 	[ check_key( request )( response ) {
 		statusCode = 200;
+		install( InvalidKey => println@Console("Error: INVALID_KEY")() );
+
 		if ( is_defined( global.valid_keys.( request.key ) ) ) {
 			println@Console("Received key: " + request.key)();
 			getCurrentTimeMillis@Time()( timestamp );
@@ -58,7 +52,7 @@ main {
 			if ( diff > KeyDuration ) {
 				statusCode = 401;
 				undef( global.valid_keys.( request.key ) );
-				throwKeyError
+				throw( InvalidKey, "Invalid key, please retry or get a new one." )
 			};
 
 			with( response ) {
@@ -69,6 +63,7 @@ main {
 		}
 		else {
 			statusCode = 401;
+			throw( InvalidKey, "Invalid key, please retry or get a new one." )
 		}
 	}]
 }
