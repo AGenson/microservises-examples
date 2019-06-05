@@ -1,8 +1,8 @@
 include "console.iol"
 
-include "../authentificator/authentificator.iol"
-include "../calculator/calculator.iol"
-include "../locations.iol"
+include "../../services/authentificator/authentificator.iol"
+include "../../services/calculator/calculator.iol"
+include "../../locations.iol"
 include "proxy.iol"
 
 execution{ concurrent }

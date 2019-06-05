@@ -1,6 +1,6 @@
 include "console.iol"
 
-include "../locations.iol"
+include "../../locations.iol"
 include "calculator.iol"
 
 execution{ concurrent }

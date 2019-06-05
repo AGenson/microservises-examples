@@ -1,8 +1,8 @@
 include "console.iol"
 include "time.iol"
 
-include "../locations.iol"
-include "../credentials.iol"
+include "../../locations.iol"
+include "../../credentials.iol"
 include "authentificator.iol"
 
 execution{ concurrent }

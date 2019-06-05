@@ -1,26 +1,26 @@
 include "console.iol"
 include "time.iol"
 
-include "../locations.iol"
+include "../../locations.iol"
 include "circuit_breaker.iol"
-include "../circuit_breaker/stats.iol"
-include "../authenticated_calculator/surface.iol"
+include "../../services/circuit_breaker/stats.iol"
+include "../../services/calculator/calculator.iol"
 
 execution{ concurrent }
 
 outputPort Stats { Interfaces: StatsInterface }
-embedded { Jolie: "../circuit_breaker/stats.ol" in Stats }
+embedded { Jolie: "../../services/circuit_breaker/stats.ol" in Stats }
 
-outputPort AuthenticatedCalculator {
-	Location: ProxyLocation
+outputPort Calculator {
+	Location: CalculatorLocation
 	Protocol: http
-	Interfaces: AuthenticatedCalculatorSurface
+	Interfaces: CalculatorInterface
 }
 
 inputPort CircuitBreaker {
 	Location: CircuitBreakerLocation
 	Protocol: http
-	Aggregates: AuthenticatedCalculator with CircuitBreakerInterface_Extender
+	Aggregates: Calculator with CircuitBreakerInterface_Extender
 }
 
 inputPort CircuitBreakerInternal {
@@ -47,7 +47,7 @@ define checkErrorRate {
 }
 
 courier CircuitBreaker {
-	[ interface AuthenticatedCalculatorSurface( request )( response ) ] {
+	[ interface CalculatorInterface( request )( response ) ] {
 		install( CircuitBreakerFault => println@Console("Error: CIRCUIT_BREAKER_FAULT")() );
 		getState;
 

@@ -1,8 +1,8 @@
 include "console.iol"
 
-include "../circuit_breaker_calculator/surface.iol"
-include "../authentificator/authentificator.iol"
-include "../locations.iol"
+include "../../services/authentificator/authentificator.iol"
+include "../../circuit_breaker/calculator/surface.iol"
+include "../../locations.iol"
 include "proxy.iol"
 
 execution{ concurrent }
