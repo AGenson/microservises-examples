@@ -1,8 +1,7 @@
 include "console.iol"
 
-include "../circuit_breaker_calculator/circuit_breaker.iol"
+include "../circuit_breaker_calculator/surface.iol"
 include "../authentificator/authentificator.iol"
-include "../calculator/calculator.iol"
 include "../locations.iol"
 include "proxy.iol"
 
@@ -17,7 +16,7 @@ outputPort Authentificator {
 outputPort CircuitBreakerCalculator {
 	Location: CircuitBreakerLocation
 	Protocol: http
-	Interfaces: CalculatorInterface
+	Interfaces: CircuitBreakerCalculatorSurface
 }
 
 inputPort AuthenticatedCalculator {
@@ -29,7 +28,7 @@ inputPort AuthenticatedCalculator {
 }
 
 courier AuthenticatedCalculator {
-	[ interface CalculatorInterface( request )( response ) ] {
+	[ interface CircuitBreakerCalculatorSurface( request )( response ) ] {
 		check_key@Authentificator( { .key = request.key } )( key_info );
 
 		forward( request )( response );
