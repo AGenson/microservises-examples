@@ -32,9 +32,7 @@ courier Proxy {
 
 		forward( request )( response );
 
-		with( response ) {
-			.key_info << key_info
-		}
+		with( response ) { .key_info << key_info }
 	}
 }
 
