@@ -1,5 +1,4 @@
 include "console.iol"
-include "string_utils.iol"
 
 include "../authentificator/authentificator.iol"
 include "../calculator/calculator.iol"
