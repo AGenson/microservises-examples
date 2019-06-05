@@ -7,7 +7,7 @@ execution{ concurrent }
 
 inputPort Calculator {
 	Location: CalculatorLocation
-	Protocol: http
+	Protocol: http  { .statusCode -> statusCode }
 	Interfaces: CalculatorInterface
 }
 
@@ -36,9 +36,13 @@ main {
 	}]
 
 	[ div( request )( response ) {
+		statusCode = 200;
 		install( ZeroDivisionError => println@Console("Error: ZERO_DIVISION_ERROR")() );
-		if ( request.y == 0 )
-			throw( ZeroDivisionError, "Tried to do a division by zero." );
+
+		if ( request.y == 0 ) {
+			statusCode = 422;
+			throw( ZeroDivisionError, "Tried to do a division by zero." )
+		}
 
 		response.result = request.x / request.y;
 		_op = "/"; logOperation
