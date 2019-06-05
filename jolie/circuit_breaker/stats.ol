@@ -36,34 +36,22 @@ define rollingWindowCheck {
 define undefArray {
 	for (i = 0, i < #global.stats.(name), i = i)
 		undef( global.stats.(name)[i] )
-	array -> success;
-	rollingWindowCheck;
-	array -> failure;
-	rollingWindowCheck;
-}
-
-define checkRate { // Need to verify if it actually is the same code for canPass and shouldTrip (not sure)
-	rollingWindowCheckForAll;
-	rate = 0;
-
-	if ( #timeout + #success + #failure != 0 )
-		rate = ( #timeout + #failure ) / ( #timeout + #success + #failure ) * 100;
-
-	response = ( rate < TripThreshold );
 }
 
 main {
 	[ checkShouldTrip()( response ) {
-		synchronized( stats ){
-			checkRate;
-			println@Console("Check if should trip: rate=" + rate + "% & shouldTrip=" + response)()
-		}
-	}]
+		synchronized( stats ) {
+			rate = 0;
 
-	[ checkCanPass()( response ) {
-		synchronized( stats ){
-			checkRate;
-			println@Console("Check if can pass: rate=" + rate + "% & canPass=" + response)()
+			name = TimeoutName; rollingWindowCheck;
+			name = SuccessName; rollingWindowCheck;
+			name = FailureName; rollingWindowCheck;
+
+			if ( #timeout + #success + #failure != 0 )
+				rate = int( double( #timeout + #failure ) / ( #timeout + #success + #failure ) * 100 );
+
+			response = ( rate > TripThreshold );
+			println@Console("Stats: check if should trip: rate=" + rate + "% & shouldTrip=" + response)()
 		}
 	}]
 

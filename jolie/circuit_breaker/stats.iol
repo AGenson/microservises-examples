@@ -17,7 +17,6 @@ interface StatsInterface {
 		reset( void )
 
 	RequestResponse:
-		checkShouldTrip( void )( bool ),
-		checkCanPass( void )( bool )
+		checkShouldTrip( void )( bool )
 
 }
