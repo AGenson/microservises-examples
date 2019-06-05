@@ -1,14 +1,7 @@
-// include type KeyType from "authentificator.iol
-
-type KeyType: void {
-	.key: string
-}
+// include types KeyType, KeyInfoType from "authentificator.iol"
 
 type AuthResponseType: void {
-	.key_info: void {
-		.key: string
-		.valid_for: long
-	}
+	.key_info: KeyInfoType
 }
 
 interface extender ProxyInterface_Extender {
