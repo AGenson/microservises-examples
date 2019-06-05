@@ -1,4 +1,11 @@
-// include types KeyType, KeyInfoType from "authentificator.iol"
+type KeyType: void {
+	.key: string
+}
+
+type KeyInfoType: void {
+	.key: string
+	.valid_for: long
+}
 
 type AuthResponseType: void {
 	.key_info: KeyInfoType
