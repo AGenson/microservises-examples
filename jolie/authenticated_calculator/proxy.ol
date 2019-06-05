@@ -18,7 +18,7 @@ outputPort Calculator {
 	Interfaces: CalculatorInterface
 }
 
-inputPort Proxy {
+inputPort AuthenticatedCalculator {
 	Location: ProxyLocation
 	Protocol: http
 	Aggregates:
@@ -26,7 +26,7 @@ inputPort Proxy {
 		Authentificator
 }
 
-courier Proxy {
+courier AuthenticatedCalculator {
 	[ interface CalculatorInterface( request )( response ) ] {
 		check_key@Authentificator( { .key = request.key } )( key_info );
 
