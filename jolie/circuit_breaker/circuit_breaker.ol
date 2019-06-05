@@ -28,11 +28,6 @@ inputPort CircuitBreakerInternal {
 	Interfaces: CircuitBreakerInterface
 }
 
-define throwFault {
-	throw( CircuitBreakerFault, "Server not available." );
-	println@Console("Error: CIRCUIT_BREAKER_FAULT")()
-}
-
 define getState { synchronized( state ){ state = global.state } }
 define setState { synchronized( state ){ global.state = state } }
 
@@ -48,26 +43,6 @@ define checkErrorRate {
 		checkShouldTrip@Stats()( shouldTrip );
 		if ( shouldTrip ) trip
 	} else if ( global.state == State_HalfOpen ) trip
-}
-
-define handleFault {
-	install( dafault => 
-		cancelTimeout@Time( timeoutID )();
-		failure@Stats();
-		checkErrorRate
-	)
-}
-
-define procedureAfterForward {
-	cancelTimeout@Time( timeoutID )();
-	getState;
-
-	if (state == State_HalfOpen) { // Not in original code, but got to implement in a way to go back to Closed state
-		reset@Stats();
-		state = State_Closed; setState
-	}; // Until here
-	
-	success@Stats()
 }
 
 courier CircuitBreaker {
@@ -90,7 +65,6 @@ courier CircuitBreaker {
 				forward( request )( response );
 				procedureAfterForward
 			}
-			else throwFault
 		}
 	}
 }
