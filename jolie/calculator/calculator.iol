@@ -12,5 +12,5 @@ interface CalculatorInterface {
 		sum( RequestType )( ResponseType ),
 		sub( RequestType )( ResponseType ),
 		mul( RequestType )( ResponseType ),
-		div( RequestType )( ResponseType ) throws ZeroDivisionError
+		div( RequestType )( ResponseType ) throws ZeroDivisionError( string )
 }
