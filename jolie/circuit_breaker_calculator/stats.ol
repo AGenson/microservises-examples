@@ -7,7 +7,6 @@ execution{ concurrent }
 
 inputPort Stats {
 	Location: "local"
-	Protocol: sodep
 	Interfaces: StatsInterface
 }
 
