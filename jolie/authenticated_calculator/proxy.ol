@@ -5,6 +5,8 @@ include "../calculator/calculator.iol"
 include "../locations.iol"
 include "proxy.iol"
 
+execution{ concurrent }
+
 outputPort Authentificator {
 	Location: AuthentificatorLocation
 	Protocol: http
