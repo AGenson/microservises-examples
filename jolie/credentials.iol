@@ -1,5 +1,5 @@
 constants {
 	Username = "client",
 	Password = "microservices",
-	KeyDuration = 200
+	KeyDuration = 60000
 }
