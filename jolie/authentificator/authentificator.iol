@@ -14,6 +14,6 @@ type KeyInfoType: void {
 
 interface AuthentificatorInterface {
 	RequestResponse:
-		getKey( CredentialsType )( KeyInfoType ) throws CredentialsError( string ),
-		checkKey( KeyType )( KeyInfoType ) throws InvalidKey( string )
+		get_key( CredentialsType )( KeyInfoType ) throws InvalidCredentials( string ),
+		check_key( KeyType )( KeyInfoType ) throws InvalidKey( string )
 }

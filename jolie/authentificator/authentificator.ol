@@ -30,7 +30,7 @@ define throwKeyError {
 }
 
 main {
-	[getKey( request )( response ) {
+	[ get_key( request )( response ) {
 		println@Console("\nReceived credentials: username=" + request.username + " & password=" + request.password)();
 
 		if ( global.credentials.( request.username ) == request.password ) {
@@ -45,7 +45,7 @@ main {
 		}
 	}]
 
-	[checkKey( request )( response ) {
+	[ check_key( request )( response ) {
 		if ( is_defined( global.valid_keys.( request.key ) ) ) {
 			println@Console("\nReceived key: " + request.key)();
 			getCurrentTimeMillis@Time()( timestamp );
