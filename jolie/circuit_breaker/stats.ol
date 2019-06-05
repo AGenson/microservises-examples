@@ -12,26 +12,25 @@ inputPort Stats {
 }
 
 init {
-	timeout -> global.stats.timeout;
-	success -> global.stats.success;
-	failure -> global.stats.failure;
+	timeout -> global.stats.(TimeoutName);
+	success -> global.stats.(SuccessName);
+	failure -> global.stats.(FailureName)
 }
 
 define addNewTimestamp {
 	getCurrentTimeMillis@Time()( timestamp );
-	array[#array] = timestamp;
+	global.stats.(name)[#global.stats.(name)] = timestamp
 }
 
 define rollingWindowCheck {
 	getCurrentTimeMillis@Time()( timestamp );
 
-	foreach ( item : array ) {
-		if ( ( timestamp - item ) < ( RollingWindow * 1000 ) )
-			newArray[#newArray] = item;
+	for (i = 0, i < #global.stats.(name), i = i) {
+		if ( ( timestamp - global.stats.(name)[i] ) > ( RollingWindow * 1000 ) )
+			undef( global.stats.(name)[i] )
+		else
+			i = #global.stats.(name)
 	}
-
-	undef( array )
-	array << newArray
 }
 
 define rollingWindowCheckForAll {
@@ -69,35 +68,32 @@ main {
 	}]
 
 	[ timeout() ] {
-		synchronized( stats ){
-			array -> timeout;
-			addNewTimestamp;
-			println@Console("Timeout called")
+		synchronized( stats ) {
+			name = TimeoutName; addNewTimestamp;
+			println@Console("Stats: timeout called")()
 		}
 	}
 
 	[ success() ] {
-		synchronized( stats ){
-			array -> timeout;
-			addNewTimestamp;
-			println@Console("Success called")
+		synchronized( stats ) {
+			name = SuccessName; addNewTimestamp;
+			println@Console("Stats: success called")()
 		}
 	}
 
 	[ failure() ] {
-		synchronized( stats ){
-			array -> timeout;
-			addNewTimestamp;
-			println@Console("Failure called")
+		synchronized( stats ) {
+			name = FailureName; addNewTimestamp;
+			println@Console("Stats: failure called")()
 		}
 	}
 
-	[ reset() {
-		synchronized( stats ){
-			undef( timeout );
-			undef( success );
-			undef( failure );
-			println@Console("Reset called")()
+	[ reset() ] {
+		synchronized( stats ) {
+			name = TimeoutName; undefArray;
+			name = SuccessName; undefArray;
+			name = FailureName; undefArray;
+			println@Console("Stats: reset called")()
 		}
-	}]
+	}
 }
