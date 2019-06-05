@@ -82,11 +82,8 @@ main {
 	}
 
 	[ resetTimeout() ] {
-		synchronized( state ){
-			if ( global.state == State_Open ) {
-				reset@Stats();
-				global.state = State_HalfOpen
-			}
-		}
+		reset@Stats();
+		state = State_HalfOpen; setState;
+		println@Console("Circuit Breaker: switched to Half-Open State.")()
 	}
 }
