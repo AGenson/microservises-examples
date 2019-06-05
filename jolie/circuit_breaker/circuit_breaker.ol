@@ -33,6 +33,7 @@ define setState { synchronized( state ){ global.state = state } }
 
 define trip {
 	state = State_Open; setState;
+	println@Console("Circuit Breaker: switched to Open State.")();
 	scheduleTimeout@Time( int(ResetTimeout*1000) { .operation = "resetTimeout" } )()
 }
 
@@ -47,23 +48,22 @@ define checkErrorRate {
 
 courier CircuitBreaker {
 	[ interface CalculatorInterface( request )( response ) ] {
+		install( CircuitBreakerFault => println@Console("Error: CIRCUIT_BREAKER_FAULT")() );
 		getState;
 
-		if (state == State_Closed) {
-			scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
-			handleFault;
-			forward( request )( response );
-			procedureAfterForward
-		}
-		else if (state == State_Open) throwFault
+		if (state == State_Open) throw( CircuitBreakerFault, "Server not available." )
 		else {
-			checkCanPass@Stats()( canPass );
+			scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
+			install( default => println@Console("Error: SERVICE_ERROR")(); cancelTimeout@Time( timeoutID )(); failure@Stats(); checkErrorRate );
 
-			if ( canPass ) {
-				scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
-				handleFault;
-				forward( request )( response );
-				procedureAfterForward
+			forward( request )( response );
+			
+			cancelTimeout@Time( timeoutID )();
+			success@Stats();
+
+			if (state == State_HalfOpen) {
+				state = State_Closed; setState;
+				println@Console("Circuit Breaker: switched to Close State.")()
 			}
 		}
 	}
@@ -72,7 +72,7 @@ courier CircuitBreaker {
 init {
 	state = State_Closed; setState;
 
-	println@Console("Circuit Breaker service started.\nEndpoint: " + CircuitBreakerLocation + "\n")()
+	println@Console("Circuit Breaker: service started.\nEndpoint: " + CircuitBreakerLocation + "\n")()
 }
 
 main {
