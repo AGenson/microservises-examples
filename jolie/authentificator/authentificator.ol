@@ -9,14 +9,14 @@ execution{ concurrent }
 
 inputPort Authentificator {
 	Location: AuthentificatorLocation
-	Protocol: http
+	Protocol: http { .statusCode -> statusCode }
 	Interfaces: AuthentificatorInterface
 }
 
 init {
 	global.credentials.( Username ) = Password;
 
-	println@Console("Authentificator service started.\nEndpoint: " + AuthentificatorLocation)()
+	println@Console("Authentificator service started.\nEndpoint: " + AuthentificatorLocation + "\n")()
 }
 
 define throwCredentialsError {
@@ -31,27 +31,32 @@ define throwKeyError {
 
 main {
 	[ get_key( request )( response ) {
-		println@Console("\nReceived credentials: username=" + request.username + " & password=" + request.password)();
+		statusCode = 200;
+		println@Console("Received credentials: username=" + request.username + " & password=" + request.password)();
 
 		if ( global.credentials.( request.username ) == request.password ) {
-			response.key = new;
-			response.valid_for = KeyDuration;
+			with( response ) {
+				.key = new;
+				.valid_for = KeyDuration
+			};
 			getCurrentTimeMillis@Time()( timestamp );
 			global.valid_keys.( response.key ) = timestamp;
 			println@Console("Created new key: key=" + response.key + " & timestamp=" + timestamp)()
 		}
 		else {
-			throwCredentialsError
+			statusCode = 401;
 		}
 	}]
 
 	[ check_key( request )( response ) {
+		statusCode = 200;
 		if ( is_defined( global.valid_keys.( request.key ) ) ) {
-			println@Console("\nReceived key: " + request.key)();
+			println@Console("Received key: " + request.key)();
 			getCurrentTimeMillis@Time()( timestamp );
 			diff = timestamp - global.valid_keys.( request.key );
 
 			if ( diff > KeyDuration ) {
+				statusCode = 401;
 				undef( global.valid_keys.( request.key ) );
 				throwKeyError
 			};
@@ -60,11 +65,10 @@ main {
 				.key = request.key;
 				.valid_for = KeyDuration - diff
 			};
-
-			println@Console("Key still valid")()
+			println@Console("Valid key: true")()
 		}
 		else {
-			throwKeyError
+			statusCode = 401;
 		}
 	}]
 }
