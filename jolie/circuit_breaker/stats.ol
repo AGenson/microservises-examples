@@ -33,9 +33,9 @@ define rollingWindowCheck {
 	}
 }
 
-define rollingWindowCheckForAll {
-	array -> timeout;
-	rollingWindowCheck;
+define undefArray {
+	for (i = 0, i < #global.stats.(name), i = i)
+		undef( global.stats.(name)[i] )
 	array -> success;
 	rollingWindowCheck;
 	array -> failure;
