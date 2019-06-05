@@ -36,10 +36,9 @@ main {
 	}]
 
 	[ div( request )( response ) {
-		if ( request.y == 0 ) {
+		install( ZeroDivisionError => println@Console("Error: ZERO_DIVISION_ERROR")() );
+		if ( request.y == 0 )
 			throw( ZeroDivisionError, "Tried to do a division by zero." );
-			println@Console("Error: ZERO_DIVISION_ERROR")()
-		};
 
 		response.result = request.x / request.y;
 		_op = "/"; logOperation
