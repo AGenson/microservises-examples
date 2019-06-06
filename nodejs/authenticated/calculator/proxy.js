@@ -14,7 +14,7 @@ const authorisePaths = [ '/calculator' ]
 
 let app = express()
 app.use(bodyParser.json())
-authorisePaths.forEach( (path) => app.use(path, authorize) )
+authorisePaths.forEach( path => app.use(path, authorize) )
 
 app.post('/calculator', async (req, res) => {
     axios({
