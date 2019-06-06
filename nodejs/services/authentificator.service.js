@@ -50,7 +50,7 @@ app.post('/check_key', (req, res) => {
         if (typeof db_valid_keys[key] != 'number')
             throwErr(res, invalid_key_err)
         else {
-            let diff =Date.now() - db_valid_keys[key]
+            let diff = Date.now() - db_valid_keys[key]
 
             if (diff > KeyDuration) {
                 throwErr(res, invalid_key_err)
