@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-const { CalculatorLocation } = require('../locations')
+const { CalculatorPort } = require('../locations')
 
 const operations = {
 	'+': ({ x, y }) => x + y,
@@ -43,4 +43,4 @@ app.post('/calculator', (req, res) => {
 	res.json({ result })
 })
 
-app.listen( CalculatorLocation, () => { console.log(`Calculator service started.\nEndpoint: http://localhost:${CalculatorLocation}\n`) })
+app.listen( CalculatorPort, () => { console.log(`Calculator service started.\nEndpoint: http://localhost:${CalculatorLocation}\n`) })

@@ -1,5 +1,6 @@
 // Ports of the different locations, to add to http://localhost:PORT
 
 module.exports = {
-    CalculatorLocation: "8001"
+    CalculatorPort: '8001',
+    AuthentificatorPort: '8002'
 }
