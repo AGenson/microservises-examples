@@ -1,7 +1,7 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 
-const { CalculatorPort } = require('../locations')
+const { CalculatorPort } = require('../../locations')
 
 const throwErr = (res, err) => {
 	console.log(`Error: ${err.type}`)

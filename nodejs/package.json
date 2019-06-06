@@ -4,8 +4,8 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "calculator": "node services/calculator.service.js",
-    "authentificator": "node services/authentificator.service.js",
+    "calculator": "node common/services/calculator.service.js",
+    "authentificator": "node common/services/authentificator.service.js",
     "authentificated_calculator": "node authenticated/calculator/proxy.js"
   },
   "dependencies": {

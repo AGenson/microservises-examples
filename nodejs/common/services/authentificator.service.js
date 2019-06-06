@@ -2,8 +2,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const uuidv4 = require('uuid/v4')
 
-const { AuthentificatorPort } = require('../locations')
-const { Username, Password, KeyDuration } = require('../credentials')
+const { AuthentificatorPort } = require('../../locations')
+const { Username, Password, KeyDuration } = require('../../credentials')
 
 const throwErr = (res, err) => {
 	console.log(`Error: ${err.type}`)
