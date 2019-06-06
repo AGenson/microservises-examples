@@ -28,9 +28,9 @@ type AuthenticatedCalculator_ResponseType: void {
 	.key_info: KeyInfoType
 }
 
-interface AuthenticatedCalculatorSurface {
+interface CircuitBreakerAuthenticatedCalculatorSurface {
 	RequestResponse:
-		calculator( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws CircuitBreakerFault( string ) InvalidKey( string ) ZeroDivisionError( string ),
-		get_key( CredentialsType )( KeyInfoType ) throws CircuitBreakerFault( string ) InvalidCredentials( string ),
-		check_key( KeyType )( KeyInfoType ) throws CircuitBreakerFault( string ) InvalidKey( string )
+		calculator( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws CircuitBreakerFault( string ) InvalidKey( string ) ZeroDivisionError( string ) TypeMismatch( undefined ),
+		get_key( CredentialsType )( KeyInfoType ) throws CircuitBreakerFault( string ) InvalidCredentials( string ) TypeMismatch( undefined ),
+		check_key( KeyType )( KeyInfoType ) throws CircuitBreakerFault( string ) InvalidKey( string ) TypeMismatch( undefined )
 }

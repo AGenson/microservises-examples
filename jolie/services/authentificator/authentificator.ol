@@ -13,10 +13,16 @@ inputPort Authentificator {
 	Interfaces: AuthentificatorInterface
 }
 
+inputPort AuthentificatorSodep {
+	Location: AuthentificatorLocationSodep
+	Protocol: sodep
+	Interfaces: AuthentificatorInterface
+}
+
 init {
 	global.credentials.( Username ) = Password;
 
-	println@Console("Authentificator service started.\nEndpoint: " + AuthentificatorLocation + "\n")()
+	println@Console("Authentificator service started.\nEndpoints: \n\thttp:  " + AuthentificatorLocation + "\n\tsodep: " + AuthentificatorLocationSodep + "\n")()
 }
 
 main {

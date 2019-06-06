@@ -17,5 +17,10 @@ interface CircuitBreakerInterface {
 
 interface extender CircuitBreakerInterface_Extender {
 	RequestResponse:
-		*( void )( void ) throws CircuitBreakerFault( string )
+		*( void )( void ) throws CircuitBreakerFault( string ) TypeMismatch( undefined )
+}
+
+interface extender CircuitBreakerSodepInterface_Extender {
+	RequestResponse:
+		*( void )( void ) throws CircuitBreakerFault( string ) ZeroDivisionError( string )
 }

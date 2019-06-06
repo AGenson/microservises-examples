@@ -13,9 +13,21 @@ outputPort Authentificator {
 	Interfaces: AuthentificatorInterface
 }
 
+outputPort AuthentificatorSodep {
+	Location: AuthentificatorLocationSodep
+	Protocol: sodep
+	Interfaces: AuthentificatorInterface
+}
+
 outputPort Calculator {
 	Location: CalculatorLocation
 	Protocol: http
+	Interfaces: CalculatorInterface
+}
+
+outputPort CalculatorSodep {
+	Location: CalculatorLocationSodep
+	Protocol: sodep
 	Interfaces: CalculatorInterface
 }
 
@@ -27,19 +39,38 @@ inputPort AuthenticatedCalculator {
 		Authentificator
 }
 
+inputPort AuthenticatedCalculatorSodep {
+	Location: ProxyLocationSodep
+	Protocol: sodep
+	Aggregates:
+		CalculatorSodep with ProxyInterfaceSodep_Extender,
+		AuthentificatorSodep
+}
+
 courier AuthenticatedCalculator {
 	[ interface CalculatorInterface( request )( response ) ] {
+		install( TypeMismatch => println@Console("Error: ServiceError")() );
 		check_key@Authentificator( { .key = request.key } )( key_info );
-
 		forward( request )( response );
+		with( response ) { .key_info << key_info }
+	}
+}
 
+courier AuthenticatedCalculatorSodep {
+	[ interface CalculatorInterface( request )( response ) ] {
+		install(
+			InvalidKey => println@Console("Error: InvalidKey")(),
+			ZeroDivisionError => println@Console("Error: ZeroDivisionError")()
+		);
+		check_key@AuthentificatorSodep( { .key = request.key } )( key_info );
+		forward( request )( response );
 		with( response ) { .key_info << key_info }
 	}
 }
 
 
-init { 
-	println@Console("Proxy started.\nEndpoint: " + ProxyLocation + "\n")()
+init {
+	println@Console("Proxy started.\nEndpoints: \n\thttp:  " + ProxyLocation + "\n\tsodep: " + ProxyLocationSodep + "\n")()
 }
 
 main {

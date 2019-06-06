@@ -17,10 +17,22 @@ outputPort AuthenticatedCalculator {
 	Interfaces: AuthenticatedCalculatorSurface
 }
 
+outputPort AuthenticatedCalculatorSodep {
+	Location: ProxyLocationSodep
+	Protocol: sodep
+	Interfaces: AuthenticatedCalculatorSurface
+}
+
 inputPort CircuitBreaker {
 	Location: CircuitBreakerLocation
 	Protocol: http
 	Aggregates: AuthenticatedCalculator with CircuitBreakerInterface_Extender
+}
+
+inputPort CircuitBreakerSodep {
+	Location: CircuitBreakerLocationSodep
+	Protocol: sodep
+	Aggregates: AuthenticatedCalculatorSodep with CircuitBreakerSodepInterface_Extender
 }
 
 inputPort CircuitBreakerInternal {
@@ -46,6 +58,23 @@ define checkErrorRate {
 	} else if ( global.state == State_HalfOpen ) trip
 }
 
+define handleError {
+	println@Console("Error: ServiceError")();
+	cancelTimeout@Time( timeoutID )();
+	failure@Stats();
+	checkErrorRate
+}
+
+define handleSuccess {
+	cancelTimeout@Time( timeoutID )();
+	success@Stats();
+
+	if (state == State_HalfOpen) {
+		state = State_Closed; setState;
+		println@Console("Circuit Breaker: switched to Close State.")()
+	}
+}
+
 courier CircuitBreaker {
 	[ interface AuthenticatedCalculatorSurface( request )( response ) ] {
 		install( CircuitBreakerFault => println@Console("Error: CIRCUIT_BREAKER_FAULT")() );
@@ -54,17 +83,26 @@ courier CircuitBreaker {
 		if (state == State_Open) throw( CircuitBreakerFault, "Server not available." )
 		else {
 			scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
-			install( default => println@Console("Error: SERVICE_ERROR")(); cancelTimeout@Time( timeoutID )(); failure@Stats(); checkErrorRate );
+			install( TypeMismatch => handleError );
 
 			forward( request )( response );
-			
-			cancelTimeout@Time( timeoutID )();
-			success@Stats();
+			handleSuccess
+		}
+	}
+}
 
-			if (state == State_HalfOpen) {
-				state = State_Closed; setState;
-				println@Console("Circuit Breaker: switched to Close State.")()
-			}
+courier CircuitBreakerSodep {
+	[ interface AuthenticatedCalculatorSurface( request )( response ) ] {
+		install( CircuitBreakerFault => println@Console("Error: CircuitBreakerFault")() );
+		getState;
+
+		if (state == State_Open) throw( CircuitBreakerFault, "Server not available." )
+		else {
+			scheduleTimeout@Time( int(CallTimeout*1000) { .operation = "callTimeout" } )( timeoutID );
+			install( default => handleError );
+
+			forward( request )( response );
+			handleSuccess
 		}
 	}
 }
@@ -72,7 +110,7 @@ courier CircuitBreaker {
 init {
 	state = State_Closed; setState;
 
-	println@Console("Circuit Breaker: service started.\nEndpoint: " + CircuitBreakerLocation + "\n")()
+	println@Console("Circuit Breaker: service started.\nEndpoints: \n\thttp:  " + CircuitBreakerLocation + "\n\tsodep: " + CircuitBreakerLocationSodep + "\n")()
 }
 
 main {

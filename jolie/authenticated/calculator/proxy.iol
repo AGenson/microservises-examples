@@ -12,5 +12,9 @@ type AuthResponseType: void {
 }
 
 interface extender ProxyInterface_Extender {
-	RequestResponse: *( KeyType )( AuthResponseType ) throws InvalidKey( string )
+	RequestResponse: *( KeyType )( AuthResponseType ) throws TypeMismatch( string )
+}
+
+interface extender ProxyInterfaceSodep_Extender {
+	RequestResponse: *( KeyType )( AuthResponseType ) throws InvalidKey( string ) ZeroDivisionError( string )
 }

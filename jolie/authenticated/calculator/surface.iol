@@ -30,7 +30,7 @@ type AuthenticatedCalculator_ResponseType: void {
 
 interface AuthenticatedCalculatorSurface {
 	RequestResponse:
-		calculator( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) ZeroDivisionError( string ),
+		calculator( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) ZeroDivisionError( string ) TypeMismatch( undefined ),
 		get_key( CredentialsType )( KeyInfoType ) throws InvalidCredentials( string ),
 		check_key( KeyType )( KeyInfoType ) throws InvalidKey( string )
 }

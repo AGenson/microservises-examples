@@ -14,5 +14,5 @@ type ResponseType: void {
 
 interface CircuitBreakerCalculatorSurface {
 	RequestResponse:
-		calculator( RequestType )( ResponseType ) throws CircuitBreakerFault( string ) ZeroDivisionError( string )
+		calculator( RequestType )( ResponseType ) throws CircuitBreakerFault( string ) ZeroDivisionError( string ) TypeMismatch( undefined )
 }

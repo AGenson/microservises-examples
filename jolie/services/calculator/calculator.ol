@@ -15,14 +15,20 @@ inputPort Calculator {
 	Interfaces: CalculatorInterface
 }
 
+inputPort CalculatorSodep {
+	Location: CalculatorLocationSodep
+	Protocol: sodep
+	Interfaces: CalculatorInterface
+}
+
 init {
-	println@Console("Calculator service started.\nEndpoint: " + CalculatorLocation + "\n")()
+	println@Console("Calculator service started.\nEndpoints: \n\thttp:  " + CalculatorLocation + "\n\tsodep: " + CalculatorLocationSodep + "\n")()
 }
 
 main {
 	[ calculator( request )( response ) {
 		install( ZeroDivisionError => println@Console("Error: ZERO_DIVISION_ERROR")() );
-		with (values) { .x = request.values.x; .y = request.values.y };
+		with (values) { .x = double(request.values.x); .y = double(request.values.y) };
 
 		if (request.operator == "+") sum@Operations( values )( response )
 		else if (request.operator == "-") sub@Operations( values )( response )
