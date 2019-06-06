@@ -43,4 +43,4 @@ app.post('/calculator', (req, res) => {
 	res.json({ result })
 })
 
-app.listen( CalculatorPort, () => { console.log(`Calculator service started.\nEndpoint: http://localhost:${CalculatorLocation}\n`) })
+app.listen( CalculatorPort, () => { console.log(`Calculator service started.\nEndpoint: http://localhost:${CalculatorPort}\n`) })
