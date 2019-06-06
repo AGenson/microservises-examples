@@ -12,9 +12,14 @@ type KeyType: void {
 	.key: string
 }
 
-type AuthenticatedCalculator_RequestType: void {
+type OperationsType: void {
 	.x: double
 	.y: double
+}
+
+type AuthenticatedCalculator_RequestType: void {
+	.values: OperationsType
+	.operator: string
 	.key: string
 }
 
@@ -25,10 +30,7 @@ type AuthenticatedCalculator_ResponseType: void {
 
 interface AuthenticatedCalculatorSurface {
 	RequestResponse:
-		div( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) CircuitBreakerFault( string ) ZeroDivisionError( string ),
-		sub( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) CircuitBreakerFault( string ),
-		mul( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) CircuitBreakerFault( string ),
-		sum( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) CircuitBreakerFault( string ),
+		calculator( AuthenticatedCalculator_RequestType )( AuthenticatedCalculator_ResponseType ) throws InvalidKey( string ) CircuitBreakerFault( string ) ZeroDivisionError( string ),
 		get_key( CredentialsType )( KeyInfoType ) throws InvalidCredentials( string ),
 		check_key( KeyType )( KeyInfoType ) throws InvalidKey( string )
 }

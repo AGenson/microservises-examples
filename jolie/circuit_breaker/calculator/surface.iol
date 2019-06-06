@@ -1,6 +1,11 @@
-type RequestType: void {
+type OperationsType: void {
 	.x: double
 	.y: double
+}
+
+type RequestType: void {
+	.values: OperationsType
+	.operator: string
 }
 
 type ResponseType: void {
@@ -9,8 +14,5 @@ type ResponseType: void {
 
 interface CircuitBreakerCalculatorSurface {
 	RequestResponse:
-		div( RequestType )( ResponseType ) throws CircuitBreakerFault( string ) ZeroDivisionError( string ),
-		sub( RequestType )( ResponseType ) throws CircuitBreakerFault( string ),
-		mul( RequestType )( ResponseType ) throws CircuitBreakerFault( string ),
-		sum( RequestType )( ResponseType ) throws CircuitBreakerFault( string ),
+		calculator( RequestType )( ResponseType ) throws CircuitBreakerFault( string ) ZeroDivisionError( string )
 }

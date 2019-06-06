@@ -1,9 +1,13 @@
 include "console.iol"
 
 include "../../locations.iol"
+include "operations.iol"
 include "calculator.iol"
 
 execution{ concurrent }
+
+outputPort Operations { Interfaces: OperationsInterface }
+embedded { Jolie: "operations.ol" in Operations }
 
 inputPort Calculator {
 	Location: CalculatorLocation
@@ -15,36 +19,21 @@ init {
 	println@Console("Calculator service started.\nEndpoint: " + CalculatorLocation + "\n")()
 }
 
-define logOperation {
-	println@Console(request.x + " " + _op + " " + request.y + " = " + response.result)()
-}
-
 main {
-	[ sum( request )( response ) {
-		response.result = request.x + request.y;
-		_op = "+"; logOperation
-	}]
-
-	[ sub( request )( response ) {
-		response.result = request.x - request.y;
-		_op = "-"; logOperation
-	}]
-
-	[ mul( request )( response ) {
-		response.result = request.x * request.y;
-		_op = "*"; logOperation
-	}]
-
-	[ div( request )( response ) {
-		statusCode = 200;
+	[ calculator( request )( response ) {
 		install( ZeroDivisionError => println@Console("Error: ZERO_DIVISION_ERROR")() );
+		with (values) { .x = request.values.x; .y = request.values.y };
 
-		if ( request.y == 0 ) {
-			statusCode = 422;
-			throw( ZeroDivisionError, "Tried to do a division by zero." )
+		if (request.operator == "+") sum@Operations( values )( response )
+		else if (request.operator == "-") sub@Operations( values )( response )
+		else if (request.operator == "*") mul@Operations( values )( response )
+		else {
+			if ( values.y == 0 ) {
+				statusCode = 422;
+				throw( ZeroDivisionError, "Tried to do a division by zero." )
+			};
+
+			div@Operations( values )( response )
 		}
-
-		response.result = request.x / request.y;
-		_op = "/"; logOperation
 	}]
 }

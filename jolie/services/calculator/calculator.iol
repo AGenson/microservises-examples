@@ -1,6 +1,11 @@
-type RequestType: void {
+type OperationsType: void {
 	.x: double
 	.y: double
+}
+
+type RequestType: void {
+	.values: OperationsType
+	.operator: string
 }
 
 type ResponseType: void {
@@ -9,8 +14,5 @@ type ResponseType: void {
 
 interface CalculatorInterface {
 	RequestResponse:
-		sum( RequestType )( ResponseType ),
-		sub( RequestType )( ResponseType ),
-		mul( RequestType )( ResponseType ),
-		div( RequestType )( ResponseType ) throws ZeroDivisionError( string )
+		calculator( RequestType )( ResponseType ) throws ZeroDivisionError( string )
 }
