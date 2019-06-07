@@ -1,0 +1,18 @@
+const axios = require('axios')
+const throwErr = require('../error')
+const { AuthentificatorPort } = require('../../locations')
+
+module.exports = (req, res, next) => {
+    if (res.locals.req_path.authorize)
+        axios({
+            method: 'post',
+            baseURL: `http://localhost:${AuthentificatorPort}`,
+            url: '/check_key',
+            data: { key: req.body.key }
+        }).then( response => {
+            res.locals.key_info = response.data
+            next()
+        }).catch( err => { throwErr(res, err.response.data) })
+    else
+        next()
+}
