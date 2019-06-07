@@ -7,7 +7,7 @@ const CircuitBreaker = require('../../common/circuit_breaker')
 const circuitBreakerPaths = [
     {
         path: '/calculator',
-        redirect: `http://localhost:${CalculatorPort}`
+        location: `http://localhost:${CalculatorPort}`
     }
 ]
 

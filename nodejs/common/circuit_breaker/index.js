@@ -2,6 +2,11 @@ const axios = require('axios')
 
 const { Config, State } = require('./constants')
 
+const throwErr = (res, err) => {
+    console.log(`Error: ${err.type}`)
+    res.status(err.code).json(err)
+}
+
 class CircuitBreaker {
     constructor(redirectPaths) {
         this.timeout = []
@@ -38,31 +43,26 @@ class CircuitBreaker {
 
     _checkShouldTrip() {
         this._checkRollingWindow()
-        let rate = 0;
+        let rate = 0
 
-        if ((this.timeout.lenght + this.success.lenght + this.failure.lenght) != 0)
-            rate = (this.timeout.lenght + this.failure.lenght) / (this.timeout.lenght + this.success.lenght + this.failure.lenght) / 100
+        if ((this.timeout.length + this.success.length + this.failure.length) != 0)
+            rate = (this.timeout.length + this.failure.length) / (this.timeout.length + this.success.length + this.failure.length) * 100
 
         let shouldTrip = rate > Config.TripThreshold
-        console.log(`Stats: check if should trip: rate=${rate}% & shouldTrip=${shouldTrip}`)
+        console.log(`Circuit Breaker: check if should trip: rate=${rate}% & shouldTrip=${shouldTrip}`)
 
         if (shouldTrip) {
             this._setState(State.Open)
-            setTimeout( () => { this._setState(State.HalfOpen) } , Config.ResetTimeout)
+            setTimeout( () => { this._setState(State.HalfOpen) } , Config.ResetTimeout * 1000)
         }
     }
 
-    static throwErr(res, err) {
-        console.log(`Error: ${err.type}`)
-	    res.status(err.code).json(err)
-    }
-
     redirect(req, res) {
-        if (this.checkPath(req.path)) {
+        if (this._checkPath(req.path)) {
             if (this.state != State.Open) {
                 axios({
                     method: 'post',
-                    timeout: Config.CallTimeout,
+                    timeout: Config.CallTimeout * 1000,
                     baseURL: this.redirectPaths[req.path],
                     url: req.path,
                     data: req.body
