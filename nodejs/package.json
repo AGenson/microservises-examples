@@ -4,10 +4,13 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
-    "calculator": "node common/services/calculator.service.js",
-    "authentificator": "node common/services/authentificator.service.js",
-    "authentificated_calculator": "node scenarios/two_layers/authenticated.calculator.js",
-    "circuit_breaker_calculator": "node scenarios/two_layers/circuit_breaker.calculator.js"
+    "calc": "node common/services/calculator.service.js",
+    "auth": "node common/services/authentificator.service.js",
+    "start": "node .",
+    "auth_calc": "node . --auth",
+    "cb_calc": "node . --cb=calc",
+    "auth_cb_calc": "node . --auth --cb=calc",
+    "cb_auth_calc": "node . --auth --cb=calc --cb=auth"
   },
   "dependencies": {
     "axios": "^0.19.0",
