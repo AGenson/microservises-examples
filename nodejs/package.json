@@ -6,8 +6,8 @@
   "scripts": {
     "calculator": "node common/services/calculator.service.js",
     "authentificator": "node common/services/authentificator.service.js",
-    "authentificated_calculator": "node authenticated/calculator/proxy.js",
-    "circuit_breaker_calculator": "node circuit_breaker/calculator/circuit_breaker.js"
+    "authentificated_calculator": "node scenarios/two_layers/authenticated.calculator.js",
+    "circuit_breaker_calculator": "node scenarios/two_layers/circuit_breaker.calculator.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
