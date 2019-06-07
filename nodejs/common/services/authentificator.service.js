@@ -2,13 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const uuidv4 = require('uuid/v4')
 
+const throwErr = require('../../common/error')
 const { AuthentificatorPort } = require('../../locations')
 const { Username, Password, KeyDuration } = require('../../credentials')
-
-const throwErr = (res, err) => {
-	console.log(`Error: ${err.type}`)
-	res.status(err.code).json(err)
-}
 
 let db_users = { }
 let db_valid_keys = { }

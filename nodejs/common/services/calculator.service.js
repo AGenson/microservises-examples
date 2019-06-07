@@ -2,11 +2,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 
 const { CalculatorPort } = require('../../locations')
+const type_check_middleware = require('../middleware/type_check.middleware')
 
-const throwErr = (res, err) => {
-	console.log(`Error: ${err.type}`)
-	res.status(err.code).json(err)
-}
 const operations = {
 	'+': ({ x, y }) => x + y,
 	'-': ({ x, y }) => x - y,
