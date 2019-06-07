@@ -14,15 +14,26 @@ const authorisePaths = [ '/calculator' ]
 
 let app = express()
 app.use(bodyParser.json())
-authorisePaths.forEach( path => app.use(path, authorize) )
+authorisePaths.forEach( path => app.post(path, authorize) )
 
-app.post('/calculator', async (req, res) => {
+app.post('/calculator', (req, res) => {
     axios({
         method: 'post',
         baseURL: `http://localhost:${CalculatorPort}`,
         url: req.path,
         data: req.body
     }).then( response => { res.json({ ...(response.data), key_info: req.body.auth }) })
+    .catch( err => { throwErr(res, err.response.data) })
+})
+
+app.post('/*', (req, res) => {
+    console.log("Hello")
+    axios({
+        method: 'post',
+        baseURL: `http://localhost:${AuthentificatorPort}`,
+        url: req.path,
+        data: req.body
+    }).then( response => { res.json({ ...(response.data) }) })
     .catch( err => { throwErr(res, err.response.data) })
 })
 
