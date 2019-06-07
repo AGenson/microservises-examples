@@ -3,6 +3,5 @@
 module.exports = {
     ProxyPort: '8000',
     CalculatorPort: '8001',
-    AuthentificatorPort: '8002',
-    CircuitBreakerPort: '8003'
+    AuthentificatorPort: '8002'
 }
