@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const axios = require('axios')
 
 const { ProxyPort, AuthentificatorPort, CalculatorPort } = require('../../locations')
-const authorize = require('./auth.middleware')(`http://localhost:${AuthentificatorPort}`)
+const authorize = require('../../common/middleware/auth.middleware')(`http://localhost:${AuthentificatorPort}`)
 
 const throwErr = (res, err) => {
 	console.log(`Error: ${err.type}`)
