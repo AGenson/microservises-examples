@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const uuidv4 = require('uuid/v4')
 
 const throwErr = require('../../common/error')
-const { AuthentificatorPort } = require('../../locations')
+const { AuthenticatorPort } = require('../../locations')
 const { Username, Password, KeyDuration } = require('../../credentials')
 
 let db_users = { }
@@ -60,4 +60,4 @@ app.post('/check_key', (req, res) => {
     }
 })
 
-app.listen( AuthentificatorPort, () => { console.log(`Authentificator service started.\nEndpoint: http://localhost:${AuthentificatorPort}\n`) })
+app.listen( AuthenticatorPort, () => { console.log(`Authenticator service started.\nEndpoint: http://localhost:${AuthenticatorPort}\n`) })

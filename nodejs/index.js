@@ -1,5 +1,5 @@
 const proxy = require('./common/proxy')
-const { ProxyPort, AuthentificatorPort, CalculatorPort } = require('./locations')
+const { ProxyPort, AuthenticatorPort, CalculatorPort } = require('./locations')
 
 let calculator_path = {
     path: '/calculator',
@@ -11,7 +11,7 @@ let get_key_path = {
     path: '/get_key',
     authorize: false,
     circuit_breaker: false,
-    location: `http://localhost:${AuthentificatorPort}`
+    location: `http://localhost:${AuthenticatorPort}`
 }
 
 let args = process.argv.slice(2)

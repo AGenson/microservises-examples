@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "calc": "node common/services/calculator.service.js",
-    "auth": "node common/services/authentificator.service.js",
+    "auth": "node common/services/authenticator.service.js",
     "start": "node .",
     "auth_calc": "node . --auth",
     "cb_calc": "node . --cb=calc",
