@@ -8,16 +8,11 @@ const throwErr = (res, err) => {
 }
 
 class CircuitBreaker {
-    constructor(redirectPaths) {
+    constructor() {
         this.timeout = []
         this.success = []
         this.failure = []
         this.state = State.Closed
-        this.redirectPaths = {}
-
-        redirectPaths.forEach( item => {
-            this.redirectPaths[item.path] = item.location
-        })
     }
 
     _setState(state) {
@@ -30,15 +25,11 @@ class CircuitBreaker {
     _failure() { this.failure.push(Date.now()) }
 
     _checkRollingWindow() {
-        const checkIfOut = timestamp => (Date.now() - timestamp) < Config.RollingWindow
+        const checkIfOut = timestamp => (Date.now() - timestamp) < Config.RollingWindow * 1000
 
         this.timeout = this.timeout.filter( checkIfOut )
         this.success = this.success.filter( checkIfOut )
         this.failure = this.failure.filter( checkIfOut )
-    }
-
-    _checkPath(path) {
-        return Object.keys(this.redirectPaths).includes(path)
     }
 
     _checkShouldTrip() {
@@ -57,36 +48,35 @@ class CircuitBreaker {
         }
     }
 
-    redirect(req, res) {
-        if (this._checkPath(req.path)) {
-            if (this.state != State.Open) {
-                axios({
-                    method: 'post',
-                    timeout: Config.CallTimeout * 1000,
-                    baseURL: this.redirectPaths[req.path],
-                    url: req.path,
-                    data: req.body
-                }).then( response => {
-                    this._success()
-                    res.json({ ...(response.data) })
+    redirect(req, res, next) {
+        if (this.state != State.Open) {
+            axios({
+                method: 'post',
+                timeout: Config.CallTimeout * 1000,
+                baseURL: res.locals.req_path.location,
+                url: res.locals.req_path.path,
+                data: req.body
+            }).then( response => {
+                this._success()
+                res.locals.data = response.data
 
-                    if (this.state == State.HalfOpen)
-                        this._setState(State.Closed)
-                }).catch( err => {
-                    if (err.code == 'ECONNABORTED') {
-                        this._timeout()
-                        throwErr(res, { type: 'TIMEOUT_ERROR', code: 504, message: "Service not responding: please retry later.", data: { path: req.path } })
-                    } else {
-                        this._failure()
-                        throwErr(res, err.response.data)
-                    }
+                if (this.state == State.HalfOpen)
+                    this._setState(State.Closed)
 
-                    this._checkShouldTrip()
-                })
-            } else
-                throwErr(res, { type: 'CIRCUIT_BREAKER_FAULT', code: 500, message: "Circuit Breaker: access blocked for a short period of time." })
+                next()
+            }).catch( err => {
+                if (err.code == 'ECONNABORTED') {
+                    this._timeout()
+                    throwErr(res, { type: 'TIMEOUT_ERROR', code: 504, message: "Service not responding: please retry later.", data: { path: req.path } })
+                } else {
+                    this._failure()
+                    throwErr(res, err.response.data)
+                }
+
+                this._checkShouldTrip()
+            })
         } else
-            throwErr(res, { type: 'PATH_NOT_FOUNT', code: 404, message: "Circuit Breaker: path not aggregated by circuit breaker instance." })
+            throwErr(res, { type: 'CIRCUIT_BREAKER_FAULT', code: 500, message: "Circuit Breaker: access blocked for a short period of time." })
     }
 }
 
