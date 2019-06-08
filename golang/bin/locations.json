@@ -1,0 +1,4 @@
+{
+    "CalculateLocation" : "http://localhost:9001",
+    "AuthenticatorLocation" : "http://localhost:9002"
+}
