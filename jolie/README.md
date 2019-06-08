@@ -54,8 +54,8 @@ Body:
 
 ```json
 {
-  "username": client,
-  "password": microservices
+  "username": "client",
+  "password": "microservices"
 }
 ```
 
