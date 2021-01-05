@@ -13,7 +13,7 @@
     "cb_auth_calc": "node . --auth --cb=calc --cb=auth"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
     "uuid": "^3.3.2"
